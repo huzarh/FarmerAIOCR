@@ -117,5 +117,5 @@ def health_check():
 
 if __name__ == '__main__':
     # Production için threaded=True kullan (daha hızlı)
-    app.run(debug=False, host='0.0.0.0', port=5000, threaded=True)
+    app.run(debug=False, host='0.0.0.0', port=5001, threaded=True)
 
