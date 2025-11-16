@@ -1,30 +1,17 @@
 #!/bin/bash
 
-# Service dosyasını manuel oluşturma scripti
-# Kullanım: sudo bash setup_service.sh
+# Service dosyasını oluştur
+# Kullanım: sudo bash create_service.sh
 
 CURRENT_DIR=$(pwd)
-
-# Kullanıcı adını bul
-if [ "$EUID" -eq 0 ]; then
-    if [ -n "$SUDO_USER" ]; then
-        USER_NAME=$SUDO_USER
-    else
-        # Root kullanıcı ise, ilk normal kullanıcıyı bul
-        USER_NAME=$(getent passwd | awk -F: '$3 >= 1000 && $1 != "nobody" {print $1; exit}')
-        # Eğer normal kullanıcı yoksa root kullan
-        if [ -z "$USER_NAME" ]; then
-            USER_NAME="root"
-        fi
-    fi
-else
-    USER_NAME=$USER
+USER_NAME=$(getent passwd | awk -F: '$3 >= 1000 && $1 != "nobody" {print $1; exit}')
+if [ -z "$USER_NAME" ]; then
+    USER_NAME="root"
 fi
 
 echo "Service kullanıcısı: $USER_NAME"
 echo "Çalışma dizini: $CURRENT_DIR"
 
-# Service dosyasını oluştur
 cat > /etc/systemd/system/farmerai-ocr.service << EOF
 [Unit]
 Description=FarmerAI OCR Service
@@ -43,7 +30,6 @@ RestartSec=10
 WantedBy=multi-user.target
 EOF
 
-# Systemd'yi yeniden yükle
 systemctl daemon-reload
 
 echo "Service dosyası oluşturuldu!"
